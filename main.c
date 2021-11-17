@@ -80,27 +80,22 @@ void cria(char *argv)
     return;
   }
 
-  char chave;
+  int rrn = 0; // cabeçalho inicia com o rrn da pagina raiz, a primeira vez é 0
+  fwrite( &rrn, sizeof(int), 1, btree);
+
+  int chave;
 
   while (!feof(arqOrigem))
   {
 
-    chave = fgetc(arqOrigem);
 
-    if (chave == '|')
-    {
-      // so pula
-      chave = fgetc(arqOrigem);
-    }
+    if(fscanf(arqOrigem, "%d|", &chave) == EOF)
+    break;
 
-    fputc(chave, btree);
+    //insere(chave);
+
     // poe na pagina
     // insere(rrnAtual, chave, &filhoDpro, &chavePro);
-
-    // if (chave == EOF)
-    // {
-    //   break;
-    // }
   }
   fclose(btree);
 }

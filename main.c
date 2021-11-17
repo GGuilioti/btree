@@ -2,35 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "util.h"
+
 #define ORDEM 5
 #define MAXCHAVES ORDEM - 1
-
-typedef struct
-{
-  int CONTACHAVES;
-  int CHAVES[MAXCHAVES];
-  int FILHOS[MAXCHAVES + 1];
-} PAGINA;
-
-int busca_na_pagina(int chave, PAGINA *pag, int *pos)
-{
-  int i = 0;
-
-  while (i < pag->CONTACHAVES && chave > pag->CHAVES[i])
-  {
-    i++;
-    *pos = i;
-
-    if (*pos < pag->CONTACHAVES && chave == pag->CHAVES[*pos])
-    {
-      return 1; // encontrado
-    }
-    else
-    {
-      return 0; // não encontrado
-    }
-  }
-}
 
 int busca(int rrn, int chave, int *rrnEncontrado, int *posEncontrada)
 {
@@ -65,11 +40,11 @@ int busca(int rrn, int chave, int *rrnEncontrado, int *posEncontrada)
   }
 }
 
-void insere(int rrnAtual, int chave, PAGINA *filhoDpro, PAGINA *chavePro)
+void insereChave(int rrnAtual, int chave, int *filhoDpro, int *chavePro)
 {
 }
 
-void cria(char *argv)
+void iniciaBtree(char *argv)
 {
   FILE *btree;
   FILE *arqOrigem;
@@ -88,13 +63,13 @@ void cria(char *argv)
   while (!feof(arqOrigem))
   {
 
-
     if(fscanf(arqOrigem, "%d|", &chave) == EOF)
     break;
 
-    // poe na pagina
-    // insere(rrnAtual, chave, &filhoDpro, &chavePro);
+    //insereChave(rrnAtual, chave, &filhoDpro, &chavePro);
   }
+
+  printf("Operação bem sucedida, Arvore B criada com sucesso.");
   fclose(btree);
 }
 
@@ -105,7 +80,7 @@ int main(int argc, char *argv[])
   {
     int rr = 7, pos = 1;
     printf("Modo de criacao ativado ... nome do arquivo = %s\n", argv[2]);
-    cria(argv[2]);
+    iniciaBtree(argv[2]);
     // busca(2, 35, &rr, &pos);
   }
   else if (argc == 2 && strcmp(argv[1], "-p") == 0)

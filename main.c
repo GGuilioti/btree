@@ -8,7 +8,7 @@
 typedef struct
 {
   int CONTACHAVES;
-  char CHAVES[MAXCHAVES];
+  int CHAVES[MAXCHAVES];
   int FILHOS[MAXCHAVES + 1];
 } PAGINA;
 
@@ -39,6 +39,8 @@ int busca(int rrn, int chave, int *rrnEncontrado, int *posEncontrada)
   int pos = 0;
   PAGINA pag;
 
+  FILE *arq = fopen("btree.dat", "r");
+
   if (rrn == -1)
   {
     return 0;
@@ -46,25 +48,61 @@ int busca(int rrn, int chave, int *rrnEncontrado, int *posEncontrada)
   else
   {
     // leia a página armazenada no RRN para PAG
-    encontrada = busca_na_pagina(chave, &pag, pos);
+    fseek(arq, sizeof(PAGINA), SEEK_SET);
+    fread(&pag, sizeof(PAGINA), 1, arq);
+    encontrada = busca_na_pagina(chave, &pag, &pos);
 
     if (encontrada == 1)
     {
-      rrnEncontrado = rrn;
-      posEncontrada = pos;
+      *rrnEncontrado = rrn;
+      *posEncontrada = pos;
       return 1; // encontrado
     }
     else
     {
-      return busca(pag.FILHOS[pos], chave, &rrnEncontrado, &posEncontrada);
+      return busca(pag.FILHOS[pos], chave, rrnEncontrado, posEncontrada);
     }
   }
 }
 
-void cria()
+void insere(int rrnAtual, int chave, PAGINA *filhoDpro, PAGINA *chavePro)
+{
+}
+
+void cria(char *argv)
 {
   FILE *btree;
-  // fopen();
+  FILE *arqOrigem;
+
+  if ((btree = fopen("btree.dat", "w")) == NULL || (arqOrigem = fopen(argv, "r")) == NULL)
+  {
+    printf("\nErro ao abrir o arquivo !");
+    return;
+  }
+
+  char chave;
+
+  while (!feof(arqOrigem))
+  {
+
+    chave = fgetc(arqOrigem);
+
+    if (chave == '|')
+    {
+      // so pula
+      chave = fgetc(arqOrigem);
+    }
+
+    fputc(chave, btree);
+    // poe na pagina
+    // insere(rrnAtual, chave, &filhoDpro, &chavePro);
+
+    // if (chave == EOF)
+    // {
+    //   break;
+    // }
+  }
+  fclose(btree);
 }
 
 int main(int argc, char *argv[])
@@ -74,8 +112,8 @@ int main(int argc, char *argv[])
   {
     int rr = 7, pos = 1;
     printf("Modo de criacao ativado ... nome do arquivo = %s\n", argv[2]);
-    //cria(argv[2]);
-    busca(2, 35, &rr, &pos);
+    cria(argv[2]);
+    // busca(2, 35, &rr, &pos);
   }
   else if (argc == 2 && strcmp(argv[1], "-p") == 0)
   {

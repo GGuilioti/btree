@@ -92,8 +92,6 @@ void cria(char *argv)
     if(fscanf(arqOrigem, "%d|", &chave) == EOF)
     break;
 
-    //insere(chave);
-
     // poe na pagina
     // insere(rrnAtual, chave, &filhoDpro, &chavePro);
   }

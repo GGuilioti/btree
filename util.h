@@ -17,24 +17,26 @@ typedef struct
 
 void lePagina(int rrn, PAGINA *pag)
 {
+    FILE *arq = fopen("btree.dat", "r");
     int byteoffset = 0;
     byteoffset = rrn*(MAXCHAVES+ORDEM) + 4;
-    fseek(/*arquivo aqui*/, byteoffset, SEEK_SET);
+    fseek(arq, byteoffset, SEEK_SET);
 }
 
 void escrevePagina(int rrn, PAGINA pag)
 {
+    FILE *arq = fopen("btree.dat", "w");
     int byteoffset = 0;
     byteoffset = rrn*(MAXCHAVES+ORDEM) + 4;
 
-    fwrite(&pag, sizeof(PAGINA), 1, /*arquivo aqui*/);
+    fwrite(&pag, sizeof(PAGINA), 1, arq);
 }
 
 void inicializaPagina(PAGINA *pag)
 {
     pag->CONTACHAVES = 0;
 
-    for(int i = 0; i < MAXCHAVES-1; i++)
+    for(int i = 0; i < MAXCHAVES; i++)
     {
         pag->CHAVES[i] = 0;
         pag->FILHOS[i] = -1;
@@ -80,6 +82,34 @@ void insereNaPagina(int chave, int filhoD, PAGINA *pag)
 void divide(int chave, int filhoD, PAGINA *pag, int *proxchave, int *filhoDpro, PAGINA *novaPag)
 {
   
+}
+
+int leCabecalho(FILE *arq)
+{
+  int buffer;
+  fseek(arq, 0, SEEK_SET);
+  fread(&buffer, sizeof(int), 1, arq);
+  return buffer;
+}
+
+void mostraPagina(FILE *arq, int rrn, PAGINA *buffer)
+{
+  //PAGINA buffer;
+  fseek(arq, 4+(rrn*MAXCHAVES+ORDEM), SEEK_SET);
+  fread(&buffer, sizeof(PAGINA), 1, arq);
+
+  printf("|");
+  for(int i = 0; i < MAXCHAVES; i++)
+  {
+    printf(" %i |", buffer->CHAVES[i]);
+  }
+
+  printf("\n|");
+  for(int i = 0; i < MAXCHAVES; i++)
+  {
+    printf(" %i |", buffer->FILHOS[i]);
+  }
+  printf(" %i |", buffer->FILHOS[MAXCHAVES]);
 }
 
 #endif

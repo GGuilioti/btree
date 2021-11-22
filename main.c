@@ -25,7 +25,7 @@ int busca(int rrn, int chave, int *rrnEncontrado, int *posEncontrada)
     // leia a página armazenada no RRN para PAG
     fseek(arq, sizeof(PAGINA), SEEK_SET);
     fread(&pag, sizeof(PAGINA), 1, arq);
-    encontrada = busca_na_pagina(chave, &pag, &pos);
+    encontrada = buscaNaPagina(chave, &pag, &pos);
 
     if (encontrada == 1)
     {
@@ -40,33 +40,103 @@ int busca(int rrn, int chave, int *rrnEncontrado, int *posEncontrada)
   }
 }
 
-void insereChave(int rrnAtual, int chave, int *filhoDpro, int *chavePro)
-{
-}
+//int insereChave(int rrnAtual, int chave, int *filhoDpro, int *proxChave)
+//{
+//  PAGINA pag;
+//  PAGINA novaPag;
+//  int pos;
+//  int rrnPro = filhoDpro;
+//  int chavePro = proxChave;
+//
+//  int retorno = 0;
+//  //PROMOÇÃO        2
+//  //SEM PROMOÇÃO    1
+//  //ERRO           -1
+//
+//  if (rrnAtual = -1)
+//  {
+//    proxChave = chave;
+//    filhoDpro = -1;
+//    return retorno = 2;
+//
+//  }else
+//  {
+//    lePagina(rrnAtual, &pag);
+//    //ENCONTRADA = int buscaNaPagina(chave, pag, pos);
+//  }
+//  if(/*ENCONTRADA == 1*/)
+//  {
+//    printf("Chave Duplicada");
+//    return retorno = -1;
+//  }
+//
+//  retorno = insere(pag->filhos[pos], chave, rrnPro, chavePro);
+//
+//  if(retorno == 1 || -1)
+//  {
+//    return retorno;
+//  }else
+//  {
+//    if(/*EXISTE ESPAÇO EM PAG PARA INSERIR CHAVEPRO*/)
+//    {
+//      insereNaPagina(chavePro, rrnPro, &pag);
+//      escrevePagina(rrnAtual, pag);
+//      return retorno = 1; 
+//      
+//    }else
+//    {
+//      //divide(chavePro, rrnPro, &pag, chavePro, filhoDpro, &novaPag);
+//      escrevePagina(rrnAtual, pag);
+//      escrevePagina(filhoDpro, novaPag);
+//      return retorno = 2; 
+//    }
+//  }
+//}
 
-void iniciaBtree(char *argv)
+void gerenciador(char *argv)
 {
-  FILE *btree;
-  FILE *arqOrigem;
+  FILE *btree = fopen("btree.dat", "r");
+  FILE *arqOrigem = fopen(argv, "r");
+  int raiz;
+  PAGINA novaPagina;
+  int controle;
 
-  if ((btree = fopen("btree.dat", "w")) == NULL || (arqOrigem = fopen(argv, "r")) == NULL)
+  if(!(btree == NULL))
   {
-    printf("\nErro ao abrir o arquivo !");
-    return;
+    btree = fopen("btree.dat", "r+w");
+    raiz = leCabecalho(btree);
+
+  }else
+  {
+    btree = fopen("btree.dat", "w");
+    raiz = 0;
+    fwrite(&raiz, sizeof(int), 1, btree);
+    inicializaPagina(&novaPagina);
+    escrevePagina(raiz, novaPagina);
+    mostraPagina(btree, raiz, &novaPagina);
   }
 
-  int rrn = 0; // cabeçalho inicia com o rrn da pagina raiz, a primeira vez é 0
-  fwrite( &rrn, sizeof(int), 1, btree);
-
   int chave;
+  fscanf(arqOrigem, "%d|", &chave);
 
-  while (!feof(arqOrigem))
+  while(!feof(arqOrigem))
   {
-
-    if(fscanf(arqOrigem, "%d|", &chave) == EOF)
-    break;
-
-    //insereChave(rrnAtual, chave, &filhoDpro, &chavePro);
+    if(chave == EOF)
+    {
+      break;
+    }
+    else
+    {
+      if(controle = insereChave(raiz, chave, /*&filhoDpro, &chavePro*/) == 2)
+      {
+        inicializaPagina(&novaPagina);
+        novaPagina.CHAVES[0] = chavePro;
+        novaPagina.FILHOS[0] = raiz;
+        novaPagina.FILHOS[1] = filhoDpro;
+        escrevePagina(raiz, novaPagina);
+        raiz; // raiz recebe rrn da nova pagina
+      }
+    }
   }
 
   printf("Operação bem sucedida, Arvore B criada com sucesso.");
@@ -80,7 +150,7 @@ int main(int argc, char *argv[])
   {
     int rr = 7, pos = 1;
     printf("Modo de criacao ativado ... nome do arquivo = %s\n", argv[2]);
-    iniciaBtree(argv[2]);
+    gerenciador(argv[2]);
     // busca(2, 35, &rr, &pos);
   }
   else if (argc == 2 && strcmp(argv[1], "-p") == 0)
